@@ -10,6 +10,6 @@ export interface IVehicle {
   updatedAt: Date;
 }
 
-export interface ICreateVehicle extends Omit<IVehicle, 'id' | 'userId' | 'createdAt' | 'updatedAt'> {}
+export interface ICreateVehicle extends Omit<IVehicle, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export interface IUpdateVehicle extends Partial<Omit<IVehicle, 'id' | 'userId' | 'createdAt' | 'updatedAt'>> {}

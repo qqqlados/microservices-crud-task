@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, type FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createVehicleSchema, type CreateVehicleFormValues } from '../../lib/schemas/vehicle.schema';
@@ -7,52 +7,69 @@ import { Input } from '../Input';
 import { VehicleService } from '../../services/vehicle.service';
 import { toast } from 'react-toastify';
 import { Loader } from '../Loader';
+import type { IVehicle } from '../../types/vehicle';
 
-// Use schema-derived types
-type VehicleFormValues = CreateVehicleFormValues;
-
-type VehicleFormModalProps = {
+type VehicleEditModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  vehicle: Partial<IVehicle> | null;
+  onUpdated?: (updated: Partial<IVehicle>) => void;
 };
 
-export const VehicleCreateModal: FC<VehicleFormModalProps> = ({ isOpen, onClose }) => {
+export const VehicleEditModal: FC<VehicleEditModalProps> = ({ isOpen, onClose, vehicle, onUpdated }) => {
   const [loading, setLoading] = useState(false);
-  const methods = useForm<VehicleFormValues>({
+
+  const methods = useForm<CreateVehicleFormValues>({
     resolver: zodResolver(createVehicleSchema) as any,
     mode: 'onChange',
     defaultValues: {
       make: '',
       model: '',
-      year: 2025,
+      year: new Date().getFullYear(),
       vin: '',
       color: '',
-      userId: 1,
+      userId: vehicle?.userId ?? 1,
     },
   });
 
-  //TODO: grep userId from cookies etc.
-  const userId = 7;
+  useEffect(() => {
+    if (!isOpen || !vehicle) return;
+    try {
+      methods.reset({
+        make: vehicle.make ?? '',
+        model: vehicle.model ?? '',
+        year: vehicle.year ?? new Date().getFullYear(),
+        vin: vehicle.vin ?? '',
+        color: vehicle.color ?? '',
+        userId: vehicle.userId ?? 1,
+      });
+    } catch (e) {}
+  }, [isOpen, vehicle]);
 
-  const onSubmit = async (data: VehicleFormValues) => {
+  const onSubmit = async (data: CreateVehicleFormValues) => {
+    if (!vehicle?.id) {
+      toast.error('No vehicle selected');
+      return;
+    }
     try {
       setLoading(true);
-      const res = await VehicleService.createVehicle({
-        make: data.make,
-        model: data.model,
-        year: Number(data.year),
-        vin: data.vin,
-        color: data.color,
-        userId: userId,
-      });
-      if (res.error) {
+      const res = await VehicleService.updateVehicle(vehicle.id, data as any);
+      if (res?.error) {
         toast.error(res.error);
         return;
       }
-
-      toast.success('Vehicle created successfully');
-    } catch (error) {
-      console.error(error);
+      toast.success('Vehicle updated');
+      // If parent provided a callback, notify it with updated vehicle
+      try {
+        if (typeof onUpdated === 'function') {
+          await onUpdated(res);
+        }
+      } catch (err) {
+        console.error('onUpdated callback failed', err);
+      }
+      onClose();
+    } catch (e) {
+      console.error(e);
       toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -65,14 +82,8 @@ export const VehicleCreateModal: FC<VehicleFormModalProps> = ({ isOpen, onClose 
         <button className="btn btn-sm btn-circle absolute right-4 top-4" onClick={onClose} aria-label="Close">
           ✕
         </button>
-        <h3 className="font-bold text-lg mb-4">Create Vehicle</h3>
-        <Form
-          methods={methods}
-          onSubmit={async (data) => {
-            await onSubmit(data);
-            onClose();
-          }}
-        >
+        <h3 className="font-bold text-lg mb-4">Edit vehicle</h3>
+        <Form methods={methods} onSubmit={onSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input label="Make" name="make" type="text" required placeholder="Toyota" />
             <Input label="Model" name="model" type="text" required placeholder="Corolla" />
@@ -87,7 +98,7 @@ export const VehicleCreateModal: FC<VehicleFormModalProps> = ({ isOpen, onClose 
               disabled={loading || !methods.formState.isValid || !methods.formState.isDirty}
               className="btn btn-primary disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Create
+              Save
             </button>
           </div>
         </Form>
@@ -95,3 +106,5 @@ export const VehicleCreateModal: FC<VehicleFormModalProps> = ({ isOpen, onClose 
     </dialog>
   );
 };
+
+export default VehicleEditModal;

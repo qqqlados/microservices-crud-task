@@ -13,8 +13,8 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to="/users" replace />} />
-          <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/auth/sign-up" element={<SignUp />} />
+          <Route path="/auth/sign-in" element={<SignIn />} />
           <Route path="/users" element={<Users />} />
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="*" element={<NotFound />} />
