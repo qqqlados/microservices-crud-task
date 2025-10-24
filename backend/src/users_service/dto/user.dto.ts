@@ -1,11 +1,10 @@
 import {
   IsString,
   IsDate,
-  IsArray,
   IsEmail,
   MinLength,
   IsStrongPassword,
-  IsNotEmpty,
+  IsOptional,
 } from 'class-validator';
 
 export class UserDto {
@@ -53,7 +52,23 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto {
+  @IsEmail(
+    {},
+    {
+      message: 'Provided value is not email',
+    },
+  )
+  @MinLength(7, {
+    message: 'Email must contain at least 7 characters',
+  })
+  @IsString({
+    message: 'Email must be the type of string',
+  })
+  @IsOptional()
   email?: string;
+
+  @IsString()
+  @MinLength(8)
+  @IsOptional()
   name?: string;
-  password?: string;
 }

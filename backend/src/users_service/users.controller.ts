@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UseFilters,
   UseGuards,
   UseInterceptors,
@@ -38,6 +39,11 @@ export class UsersController {
   @UseGuards(AuthGuard)
   async getUsers() {
     return this.usersService.getUsers();
+  }
+
+  @Get('me')
+  async getCurrentUser(@Query('email') email: string) {
+    return this.usersService.getCurrentUser(email);
   }
 
   @Get('/:id')

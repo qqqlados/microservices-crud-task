@@ -9,30 +9,30 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   imports: [
     UsersModule,
     VehiclesModule,
-    ClientsModule.register([
-      {
-        name: 'USERS_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://localhost:5672'],
-          queue: 'users_queue',
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
-      {
-        name: 'VEHICLES_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://localhost:5672'],
-          queue: 'vehicles_queue',
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
-    ]),
+    // ClientsModule.register([
+    //   {
+    //     name: 'USERS_SERVICE',
+    //     transport: Transport.RMQ,
+    //     options: {
+    //       urls: ['amqp://localhost:5672'],
+    //       queue: 'users_queue',
+    //       queueOptions: {
+    //         durable: false,
+    //       },
+    //     },
+    //   },
+    //   {
+    //     name: 'VEHICLES_SERVICE',
+    //     transport: Transport.RMQ,
+    //     options: {
+    //       urls: ['amqp://localhost:5672'],
+    //       queue: 'vehicles_queue',
+    //       queueOptions: {
+    //         durable: false,
+    //       },
+    //     },
+    //   },
+    // ]),
   ],
   controllers: [AppController],
   providers: [AppService],
