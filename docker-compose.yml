@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+
+  users_service:
+    build:
+      context: ./users_service
+    container_name: users_service
+    ports:
+      - "3000:3000"
+    depends_on:
+      - users_db
+      - rabbitmq
+      - vehicles_service
+    env_file:
+      - ./users_service/.env
+
+  users_db:
+    image: postgres:15
+    container_name: users_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - users_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  vehicles_service:
+    build:
+      context: ./vehicles_service
+    container_name: vehicles_service
+    ports:
+      - "3001:3000"
+    depends_on:
+      - vehicles_db
+      - rabbitmq
+    env_file:
+      - ./vehicles_service/.env
+
+  vehicles_db:
+    image: postgres:15
+    container_name: vehicles_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: vehicles_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - vehicles_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - users_service
+      - vehicles_service
+
+volumes:
+  users_pgdata:
+  vehicles_pgdata:
