@@ -1,11 +1,11 @@
-import type { ICreateUser, IUser, IUpdateUser } from '../types/user';
-import { api } from '../utils/axios';
-import { setUserEmail, setUserId, removeUserCookie } from '../utils/auth';
+import type { ICreateUser, IUser, IUpdateUser } from "../types/user";
+import { apiUsers } from "../utils/axios";
+import { setUserEmail, setUserId, removeUserCookie } from "../utils/auth";
 
 export class UserService {
   static async getUsers() {
     try {
-      const res = await api.get('/users');
+      const res = await apiUsers.get("/");
       return res.data;
     } catch (err) {
       return {
@@ -17,12 +17,18 @@ export class UserService {
   static async signIn(email: string, password: string) {
     try {
       const users = await this.getUsers();
-      const targetUser = users.data.find((user: IUser) => user.email === email && user.password === password);
+      const list = Array.isArray(users) ? users : (users as any)?.data;
+      if (!Array.isArray(list)) {
+        return { error: "Something went wrong. Try again later." } as any;
+      }
+      const targetUser = list.find(
+        (user: IUser) => user.email === email && user.password === password
+      );
       if (targetUser) {
         // store email in cookie then fetch id from server
         setUserEmail(email);
         try {
-          const res = await api.get('/users/me', { params: { email } });
+          const res = await apiUsers.get("/me", { params: { email } });
           if (res?.data?.id) {
             setUserId(res.data.id);
             const payload = { ...targetUser, id: res.data.id } as any;
@@ -34,17 +40,18 @@ export class UserService {
         }
         return { ...targetUser } as any;
       }
-      return { error: 'Invalid email or password' };
+      return { error: "Invalid email or password" };
     } catch (err) {
       const e = err as any;
-      const serverMessage = e?.response?.data?.message ?? e?.message ?? 'Network or server error';
+      const serverMessage =
+        e?.response?.data?.message ?? e?.message ?? "Network or server error";
       return { error: serverMessage };
     }
   }
 
   static async getUserById(id: number) {
     try {
-      const res = await api.get(`/users/${id.toString()}`);
+      const res = await apiUsers.get(`/${id.toString()}`);
       return res.data;
     } catch (err) {
       return {
@@ -55,7 +62,7 @@ export class UserService {
 
   static async createUser(data: ICreateUser) {
     try {
-      const res = await api.post(`/users`, data);
+      const res = await apiUsers.post(`/`, data);
 
       if (res?.data) {
         const body = res.data as any;
@@ -66,27 +73,29 @@ export class UserService {
         return body;
       }
 
-      return { error: 'Empty response from server' };
+      return { error: "Empty response from server" };
     } catch (err) {
       const e = err as any;
-      const serverMessage = e?.response?.data?.message ?? e?.message ?? 'Network or server error';
+      const serverMessage =
+        e?.response?.data?.message ?? e?.message ?? "Network or server error";
       return { error: serverMessage };
     }
   }
   static async updateUser(id: number, data: IUpdateUser) {
     try {
-      const res = await api.put(`/users/${id.toString()}`, data);
+      const res = await apiUsers.put(`/${id.toString()}`, data);
       return res.data;
     } catch (err) {
       const e = err as any;
-      const serverMessage = e?.response?.data?.message ?? e?.message ?? 'Network or server error';
+      const serverMessage =
+        e?.response?.data?.message ?? e?.message ?? "Network or server error";
       return { error: serverMessage };
     }
   }
 
   static async deleteUser(id: number) {
     try {
-      const res = await api.delete(`/users/${id.toString()}`);
+      const res = await apiUsers.delete(`/${id.toString()}`);
       // if current user deleted, clear storage
       try {
         // remove cookie if present

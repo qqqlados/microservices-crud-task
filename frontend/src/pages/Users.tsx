@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { VehicleCreateModal } from '../components/modals/vehicle-create';
-import { Loader } from '../components/Loader';
-import type { IUser } from '../types/user';
-import { UserService } from '../services/user.service';
+import { VehicleCreateModal } from "../components/modals/vehicle-create";
+import { Loader } from "../components/Loader";
+import type { IUser } from "../types/user";
+import { UserService } from "../services/user.service";
 
 export const Users = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -13,11 +13,12 @@ export const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       const data = await UserService.getUsers();
-      if (data.error) {
-        console.error(data.error);
+      if ((data as any)?.error) {
+        console.error((data as any).error);
         return;
       }
-      setUsers(data.data);
+      const list = Array.isArray(data) ? data : (data as any)?.data;
+      setUsers(Array.isArray(list) ? list : []);
     };
     fetchUsers();
   }, []);
@@ -33,9 +34,13 @@ export const Users = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {users.length > 0 &&
           users.map((user) => (
-            <div className="card bg-base-100 shadow-sm p-2">
+            <div key={user.id} className="card bg-base-100 shadow-sm p-2">
               <figure>
-                <img src="/user.png" alt="User" onLoad={() => setImagesLoaded(true)} />
+                <img
+                  src="/user.png"
+                  alt="User"
+                  onLoad={() => setImagesLoaded(true)}
+                />
               </figure>
               <div className="pl-3 mt-2">
                 <h2 className="card-title">{user.name}</h2>
@@ -45,7 +50,10 @@ export const Users = () => {
           ))}
       </div>
 
-      <VehicleCreateModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+      <VehicleCreateModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+      />
 
       {!imagesLoaded && <Loader overlayStyle="bg-white" />}
     </div>
