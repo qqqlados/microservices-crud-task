@@ -1,6 +1,6 @@
 import type { ICreateUser, IUser, IUpdateUser } from "../types/user";
 import { apiUsers } from "../utils/axios";
-import { setUserEmail, setUserId, removeUserCookie } from "../utils/auth";
+import { removeUserCookie, setUserCookie } from "../utils/auth";
 
 export class UserService {
   static async getUsers() {
@@ -25,19 +25,22 @@ export class UserService {
         (user: IUser) => user.email === email && user.password === password
       );
       if (targetUser) {
-        // store email in cookie then fetch id from server
-        setUserEmail(email);
+        const cookiePayload: { id?: number; email: string; name?: string } = {
+          email,
+          name: targetUser.name,
+        } as any;
         try {
           const res = await apiUsers.get("/me", { params: { email } });
           if (res?.data?.id) {
-            setUserId(res.data.id);
+            cookiePayload.id = res.data.id;
             const payload = { ...targetUser, id: res.data.id } as any;
-            // persist in cookie via setUserId/setUserEmail already done
+            setUserCookie(cookiePayload);
             return payload;
           }
         } catch (e) {
           // ignore and return basic user
         }
+        setUserCookie(cookiePayload);
         return { ...targetUser } as any;
       }
       return { error: "Invalid email or password" };
@@ -66,11 +69,12 @@ export class UserService {
 
       if (res?.data) {
         const body = res.data as any;
-
-        setUserEmail(body.email);
-
-        setUserId(body.id);
-        return body;
+        setUserCookie({
+          id: body.data.id,
+          email: body.data.email,
+          name: body.data.name,
+        });
+        return body.data;
       }
 
       return { error: "Empty response from server" };
@@ -84,7 +88,13 @@ export class UserService {
   static async updateUser(id: number, data: IUpdateUser) {
     try {
       const res = await apiUsers.put(`/${id.toString()}`, data);
-      return res.data;
+
+      if (res?.data) {
+        setUserCookie({ id, email: res.data.email, name: res.data.name });
+        return res.data;
+      }
+
+      return { error: "Empty response from server" };
     } catch (err) {
       const e = err as any;
       const serverMessage =

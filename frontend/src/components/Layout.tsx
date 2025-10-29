@@ -6,12 +6,10 @@ export const Layout = () => {
   const user = getUserCookie();
   const location = useLocation();
 
-  // If user is authenticated, prevent access to auth pages (sign-in / sign-up)
   if (user && (location.pathname === '/auth/sign-in' || location.pathname === '/auth/sign-up')) {
     return <Navigate to="/users" replace />;
   }
 
-  // If there's no user cookie, redirect from protected pages to sign-in
   if (!user && location.pathname !== '/auth/sign-in' && location.pathname !== '/auth/sign-up') {
     return <Navigate to="/auth/sign-in" replace />;
   }
