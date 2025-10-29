@@ -20,15 +20,3 @@ export const apiVehicles = axios.create({
     authorization: "auth_token_placeholder",
   },
 });
-
-// Example for auth token wiring if needed later
-// [apiUsers, apiVehicles].forEach((client) => {
-//   client.interceptors.request.use((config) => {
-//     const token = getAuthToken();
-//     if (token) {
-//       config.headers = config.headers ?? {};
-//       (config.headers as any).authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   });
-// });

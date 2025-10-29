@@ -31,14 +31,20 @@ export class UserService {
         } as any;
         try {
           const res = await apiUsers.get("/me", { params: { email } });
+
           if (res?.data?.id) {
             cookiePayload.id = res.data.id;
             const payload = { ...targetUser, id: res.data.id } as any;
             setUserCookie(cookiePayload);
             return payload;
           }
-        } catch (e) {
-          // ignore and return basic user
+        } catch (err) {
+          const e = err as any;
+          const serverMessage =
+            e?.response?.data?.message ??
+            e?.message ??
+            "Network or server error";
+          return { error: serverMessage };
         }
         setUserCookie(cookiePayload);
         return { ...targetUser } as any;
@@ -68,13 +74,13 @@ export class UserService {
       const res = await apiUsers.post(`/`, data);
 
       if (res?.data) {
-        const body = res.data as any;
+        const body = res.data.data as any;
         setUserCookie({
-          id: body.data.id,
-          email: body.data.email,
-          name: body.data.name,
+          id: body.id,
+          email: body.email,
+          name: body.name,
         });
-        return body.data;
+        return body;
       }
 
       return { error: "Empty response from server" };
