@@ -40,8 +40,8 @@ export const SignUp = () => {
   };
 
   return (
-    <div className="grid place-items-center">
-      <div className="w-100 flex flex-col gap-5 mt-10 relative">
+    <div className="flex justify-center">
+      <div className="w-full max-w-sm mx-auto px-4 flex flex-col gap-5 mt-10 relative">
         <h1 className="font-bold text-xl text-left">Sign up</h1>
 
         <Form methods={methods} onSubmit={onSubmit}>

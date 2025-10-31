@@ -21,11 +21,16 @@ export const Users = () => {
       setUsers(Array.isArray(list) ? list : []);
     };
     fetchUsers();
+    const handler = () => setIsCreateOpen(true);
+    window.addEventListener("openCreateVehicle", handler as EventListener);
+    return () => {
+      window.removeEventListener("openCreateVehicle", handler as EventListener);
+    };
   }, []);
 
   return (
     <div className="p-4 h-[100vh] w-full overflow-y-auto pb-30 relative">
-      <div className="fixed right-20 top-3">
+      <div className="fixed right-20 top-3 hidden md:block">
         <button className="btn btn-dash" onClick={() => setIsCreateOpen(true)}>
           +
           <img src="/icons/vehicle.svg" />
