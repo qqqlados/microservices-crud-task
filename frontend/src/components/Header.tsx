@@ -51,7 +51,7 @@ export const Header = () => {
 
   return (
     <>
-      <div className="navbar bg-base-100 shadow-sm flex justify-center px-4 relative">
+      <div className="navbar bg-base-100 shadow-sm flex justify-center md:justify-between px-4 relative">
         {isAuthPage ? (
           <div className="flex items-center gap-2">
             <img src="/icons/vehicle.svg" alt="Logo" className="w-8 h-8" />
