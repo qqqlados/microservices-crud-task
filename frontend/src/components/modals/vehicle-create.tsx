@@ -67,9 +67,9 @@ export const VehicleCreateModal: FC<VehicleFormModalProps> = ({
 
   return (
     <dialog className={`modal ${isOpen ? "modal-open" : ""}`} onClose={onClose}>
-      <div className="modal-box">
+      <div className="modal-box pt-14 relative">
         <button
-          className="btn btn-sm btn-circle absolute right-4 top-4"
+          className="btn btn-sm btn-circle absolute right-4 top-4 z-10"
           onClick={onClose}
           aria-label="Close"
         >
@@ -83,7 +83,7 @@ export const VehicleCreateModal: FC<VehicleFormModalProps> = ({
             onClose();
           }}
         >
-          <div className="!grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="form-grid">
             <Input
               label="Make"
               name="make"

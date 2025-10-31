@@ -86,17 +86,19 @@ export const VehicleEditModal: FC<VehicleEditModalProps> = ({
 
   return (
     <dialog className={`modal ${isOpen ? "modal-open" : ""}`} onClose={onClose}>
-      <div className="modal-box">
-        <button
-          className="btn btn-sm btn-circle absolute right-4 top-4"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          ✕
-        </button>
+      <div className="modal-box relative">
+        <div className="absolute right-4 top-4 z-10 flex flex-col md:flex-row gap-2 items-end md:items-center">
+          <button
+            className="btn btn-sm btn-circle order-1 md:order-3"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
         <h3 className="font-bold text-lg mb-4">Edit vehicle</h3>
         <Form methods={methods} onSubmit={onSubmit}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="form-grid">
             <Input
               label="Make"
               name="make"

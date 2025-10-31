@@ -1,10 +1,10 @@
 // import vehicles from '../../../backend/prisma/vehicles.json';
-import { useEffect, useState } from 'react';
-import { VehicleDetailsModal } from '../components/modals/vehicle-details';
-import { VehicleService } from '../services/vehicle.service';
-import type { IVehicle } from '../types/vehicle';
-import { Loader } from '../components/Loader';
-import { toast } from 'react-toastify';
+import { useEffect, useState } from "react";
+import { VehicleDetailsModal } from "../components/modals/vehicle-details";
+import { VehicleService } from "../services/vehicle.service";
+import type { IVehicle } from "../types/vehicle";
+import { Loader } from "../components/Loader";
+import { toast } from "react-toastify";
 
 export const Vehicles = () => {
   const [open, setOpen] = useState(false);
@@ -39,7 +39,8 @@ export const Vehicles = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 overflow-y-auto h-[100vh] w-full p-4 pb-25">
-      {vehicles.length > 0 &&
+      {vehicles &&
+        vehicles.length > 0 &&
         vehicles.map((vehicle) => (
           <button
             key={`${vehicle.vin}`}
@@ -50,7 +51,11 @@ export const Vehicles = () => {
             }}
           >
             <figure>
-              <img src="/car.jpg" alt="Vehicle" onLoad={() => setImagesLoaded(true)} />
+              <img
+                src="/car.jpg"
+                alt="Vehicle"
+                onLoad={() => setImagesLoaded(true)}
+              />
             </figure>
             <div className="pl-3 mt-2 flex items-end gap-2 justify-center">
               <p className="text-lg">
@@ -60,7 +65,12 @@ export const Vehicles = () => {
           </button>
         ))}
 
-      <VehicleDetailsModal isOpen={open} onClose={() => setOpen(false)} vehicle={selected} refetchVehicles={refetchVehicles} />
+      <VehicleDetailsModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        vehicle={selected}
+        refetchVehicles={refetchVehicles}
+      />
 
       {!imagesLoaded && <Loader overlayStyle="bg-white" />}
     </div>

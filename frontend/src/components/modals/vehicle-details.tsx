@@ -75,25 +75,25 @@ export const VehicleDetailsModal: FC<VehicleDetailsModalProps> = ({
       <div className="modal-box relative">
         <div className="absolute right-4 top-4 flex flex-col md:flex-row gap-2 items-end md:items-center">
           <button
-            className="btn btn-sm btn-circle"
+            className="btn btn-sm btn-circle order-1 md:order-3"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+          <button
+            className="btn btn-sm btn-circle order-2 md:order-1"
             onClick={() => setEditing(true)}
             aria-label="Edit vehicle"
           >
             ✎
           </button>
           <button
-            className="btn btn-sm btn-circle"
+            className="btn btn-sm btn-circle order-3 md:order-2"
             onClick={handleDeleteVehicle}
             aria-label="Delete vehicle"
           >
             <Trash2 width={16} height={16} />
-          </button>
-          <button
-            className="btn btn-sm btn-circle"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            ✕
           </button>
         </div>
 

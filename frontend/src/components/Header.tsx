@@ -3,6 +3,7 @@ import { useState } from "react";
 import { UserService } from "../services/user.service";
 import { toast } from "react-toastify";
 import AccountEditModal from "./modals/account-edit";
+import { VehicleCreateModal } from "./modals/vehicle-create";
 import { Loader } from "./Loader";
 // cookies helper used via getUserCookie
 import { getUserCookie } from "../utils/auth";
@@ -26,6 +27,7 @@ export const Header = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const user = getUserCookie();
 
@@ -55,13 +57,16 @@ export const Header = () => {
       <div
         className={clsx(
           "navbar bg-base-100 shadow-sm flex justify-center md:justify-between px-4 relative",
-          isAuthPage && "justify-center"
+          isAuthPage && "md:justify-center"
         )}
       >
         {isAuthPage ? (
           <div className="flex items-center gap-2">
             <img src="/icons/vehicle.svg" alt="Logo" className="w-8 h-8" />
-            <span className="text-lg md:text-xl font-semibold text-gray-800">
+            <span className="text-lg font-semibold text-gray-800 md:hidden">
+              Microservices
+            </span>
+            <span className="hidden md:inline text-xl font-semibold text-gray-800">
               Microservices CRUD Task
             </span>
           </div>
@@ -69,12 +74,15 @@ export const Header = () => {
           <>
             <div className="flex items-center gap-2">
               <img src="/icons/vehicle.svg" alt="Logo" className="w-8 h-8" />
-              <span className="text-lg md:text-xl font-semibold text-gray-800">
+              <span className="text-lg font-semibold text-gray-800 md:hidden">
+                Microservices
+              </span>
+              <span className="hidden md:inline text-xl font-semibold text-gray-800">
                 Microservices CRUD Task
               </span>
             </div>
 
-            <div className="flex-none hidden md:block">
+            <div className="flex-none hidden md:block relative right-[36%] top-0">
               <ul className="menu menu-horizontal px-1 pr-10 gap-3">
                 <li>
                   <NavLink
@@ -151,9 +159,7 @@ export const Header = () => {
             <button
               className="md:hidden btn btn-dash btn-square absolute left-2 top-1/2 -translate-y-1/2 w-15"
               aria-label="Create vehicle"
-              onClick={() => {
-                window.dispatchEvent(new Event("openCreateVehicle"));
-              }}
+              onClick={() => setIsCreateOpen(true)}
             >
               +
               <img src="/icons/vehicle.svg" />
@@ -263,6 +269,10 @@ export const Header = () => {
       <AccountEditModal
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
+      />
+      <VehicleCreateModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
       />
     </>
   );
