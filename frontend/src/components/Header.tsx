@@ -15,6 +15,7 @@ import {
   CircleUserRound,
 } from "lucide-react";
 import { removeUserCookie } from "../utils/auth";
+import clsx from "clsx";
 
 export const Header = () => {
   const location = useLocation();
@@ -51,7 +52,12 @@ export const Header = () => {
 
   return (
     <>
-      <div className="navbar bg-base-100 shadow-sm flex justify-center md:justify-between px-4 relative">
+      <div
+        className={clsx(
+          "navbar bg-base-100 shadow-sm flex justify-center md:justify-between px-4 relative",
+          isAuthPage && "justify-center"
+        )}
+      >
         {isAuthPage ? (
           <div className="flex items-center gap-2">
             <img src="/icons/vehicle.svg" alt="Logo" className="w-8 h-8" />
